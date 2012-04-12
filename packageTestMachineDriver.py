@@ -140,7 +140,7 @@ class TestingMachine():
 #        position = PTToPosition(PT)
 #        return(position)
 
-    def getAnalogueMillivoltage(analogueInputNumber):
+    def getAnalogueMillivoltage(self, analogueInputNumber):
         '''Returns analogue input in millivolts'''
         self.ser.write('RINA(V1,%d) ' % int(analogueInputNumber))
         millivoltage = int(self.ser.readline())

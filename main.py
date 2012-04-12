@@ -1,7 +1,7 @@
 import gtk
 import pygtk
 
-from model_simple import MyModel
+from model import MyModel
 from view import MyView
 from controller import MyController
 

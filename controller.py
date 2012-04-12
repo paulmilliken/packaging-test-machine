@@ -36,6 +36,7 @@ class MyController(gtkmvc.Controller):
         self.view.stopBtn.connect('clicked', self._onStopBtnClicked)
         self.view.upBtn.connect('clicked', self._onUpBtnClicked)
         self.view.downBtn.connect('clicked', self._onDownBtnClicked)
+        self.view.liveViewBtn.connect('clicked', self._onLiveViewBtnClicked)
         self.view.dataDirectoryChooserButton.connect('current-folder-changed', \
             self._updateDataDirectory)
         self.view.mainWindow.connect('destroy', self._onMainWindowDestroy)
@@ -72,6 +73,9 @@ class MyController(gtkmvc.Controller):
     def _onDownBtnClicked(self, button):
         self._goDownThreaded(button)
 
+    def _onLiveViewBtnClicked(self, button):
+        self._liveViewThreaded(button)
+
     def _updateDataDirectory(self, chooserButton):
         self.model.dataDirectory = chooserButton.get_current_folder()
 
@@ -81,10 +85,6 @@ class MyController(gtkmvc.Controller):
 
 ################## signal handling #####################################3
 
-    def updatePlot(self, x, y):
-        self.view.livePlotAxis.plot(x, y, 'k.')
-        self.view.livePlotCanvas.draw_idle()
-    
     def _squashThreaded(self, widget, data=None):
         self.model.nEvents +=1
         squashThread = threading.Thread(target=self.model.squash, \
@@ -108,4 +108,34 @@ class MyController(gtkmvc.Controller):
         goDownThread = threading.Thread(target=self.model.moveDown, \
             args=(self.model.nEvents, ))
         goDownThread.start()
+
+    def _liveViewThreaded(self, widget, data=None):
+        self.model.nEvents += 1
+        liveViewThread = threading.Thread(target=self._liveView, \
+            args=(self.model.nEvents, ))
+        liveViewThread.start()
+
+
+    def _liveView(self, nEvents):
+        while(nEvents==self.model.nEvents):
+            for i in range(6):
+                millivoltage = \
+                    self.model.testingMachine.getAnalogueMillivoltage(i)
+                self.view.AnalogueValues[i].set_text('%d' % millivoltage)
+
+    #################### notifications ###############################
+
+    def property_analogueValuesList_value_change(self, model, old, new):
+        self.updateAnalogueValuesInView(new)
+
+    def property_displacement_value_change(self, model, old, new):
+        self.updatePlot(model.displacement, model.analogueValuesList[0])
+    
+    def updatePlot(self, x, y):
+        self.view.livePlotAxis.plot(x, y, 'k.')
+        self.view.livePlotCanvas.draw_idle()
+    
+    def updateAnalogueValuesInView(self, valuesList):
+        for i in range(6):
+            self.view.analogueValues[i].set_text('%d' % valuesList[i])
 

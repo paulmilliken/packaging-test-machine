@@ -33,6 +33,7 @@ class MyView(gtkmvc.View):
         self.addStopButton()
         self.addGoUpButton()
         self.addGoDownButton()
+        self.addLiveViewButton()
 
     def addSquashButton(self):
         self.squashBtn = gtk.Button("Squash Box")
@@ -63,6 +64,11 @@ class MyView(gtkmvc.View):
         self.vbuttonboxAllButtons.pack_start(self.downBtn, expand=False, \
             fill=False)
     
+    def addLiveViewButton(self):
+        self.liveViewBtn = gtk.Button("Live view")
+        self.vbuttonboxAllButtons.pack_start(self.liveViewBtn, expand=False, \
+            fill=False)
+
     def addProgressBar(self):
         self.progressbar = gtk.ProgressBar()
         self.hboxParent.pack_start(self.progressbar, expand=False, fill=False)
@@ -171,43 +177,58 @@ class MyView(gtkmvc.View):
 
     def addVBoxExtremeRHS(self):
         self.vboxExtremeRHSide = gtk.VBox()
-        self.hboxParent.pack_start(self.vboxExtremeRHSide, expand=False, fill=True)
+        self.hboxParent.pack_start(self.vboxExtremeRHSide, expand=False, \
+            fill=True)
         self.addLiveAnalogueValues()
 
     def addLiveAnalogueValues(self):
         '''Adds labels and values for Analogue channels A0 to A5'''
-        self.A0Label = gtk.Label()
-        self.A0Label.set_text("A0 (loadcell) (mV)")
-        self.A0Value = gtk.Label()
-       
-        self.A1Label = gtk.Label()
-        self.A1Label.set_text("A1 (LVDT) (mV)")
-        self.A1Value = gtk.Label()
+        self.analogueLabels = [gtk.Label(), gtk.Label(), gtk.Label(), gtk.Label(), gtk.Label(), gtk.Label()]
+        self.analogueValues = [gtk.Label(), gtk.Label(), gtk.Label(), gtk.Label(), gtk.Label(), gtk.Label()]
+        analogueLabelsText = ['A0 (loadcell) mV', 'A1 (LVDT) mV', \
+            'A2 (LVDT) mV', 'A3 (LVDT) mV', 'A4 (LVDT) mV', 'A5 (LVDT) mV']
+        for i in range(6):
+            self.analogueLabels[i].set_text(analogueLabelsText[i])
+            self.vboxExtremeRHSide.pack_start(self.analogueLabels[i], False, \
+                False)
+            self.vboxExtremeRHSide.pack_start(self.analogueValues[i], True, \
+                False)
 
-        self.A2Label = gtk.Label()
-        self.A2Label.set_text("A2 (LVDT) (mV)")
-        self.A2Value = gtk.Label()
-        
-        self.A3Label = gtk.Label()
-        self.A3Label.set_text("A3 (LVDT) (mV)")
-        self.A3Value = gtk.Label()
-        
-        self.A4Label = gtk.Label()
-        self.A4Label.set_text("A4 (LVDT) (mV)")
-        self.A4Value = gtk.Label()
-        
-        self.A5Label = gtk.Label()
-        self.A5Label.set_text("A5 (LVDT) (mV)")
-        self.A5Value = gtk.Label()
-         
-        widgetList = [[self.A0Label, self.A0Value], \
-            [self.A1Label, self.A1Value], \
-            [self.A2Label, self.A2Value], [self.A3Label, self.A3Value], \
-            [self.A4Label, self.A4Value], [self.A5Label, self.A5Value]]
-        for widget in widgetList:
-            self.vboxExtremeRHSide.pack_start(widget[0], False, False)
-            self.vboxExtremeRHSide.pack_start(widget[1], True, False)
-            widget[1].set_text("*.***")
+
+
+
+#        self.A0Label = gtk.Label()
+#        self.A0Label.set_text("A0 (loadcell) (mV)")
+#        self.A0Value = gtk.Label()
+#       
+#        self.A1Label = gtk.Label()
+#        self.A1Label.set_text("A1 (LVDT) (mV)")
+#        self.A1Value = gtk.Label()
+#
+#        self.A2Label = gtk.Label()
+#        self.A2Label.set_text("A2 (LVDT) (mV)")
+#        self.A2Value = gtk.Label()
+#        
+#        self.A3Label = gtk.Label()
+#        self.A3Label.set_text("A3 (LVDT) (mV)")
+#        self.A3Value = gtk.Label()
+#        
+#        self.A4Label = gtk.Label()
+#        self.A4Label.set_text("A4 (LVDT) (mV)")
+#        self.A4Value = gtk.Label()
+#        
+#        self.A5Label = gtk.Label()
+#        self.A5Label.set_text("A5 (LVDT) (mV)")
+#        self.A5Value = gtk.Label()
+#         
+#        widgetList = [[self.A0Label, self.A0Value], \
+#            [self.A1Label, self.A1Value], \
+#            [self.A2Label, self.A2Value], [self.A3Label, self.A3Value], \
+#            [self.A4Label, self.A4Value], [self.A5Label, self.A5Value]]
+#        for widget in widgetList:
+#            self.vboxExtremeRHSide.pack_start(widget[0], False, False)
+#            self.vboxExtremeRHSide.pack_start(widget[1], True, False)
+#            widget[1].set_text("*.***")
             
 if __name__=='__main__':
    v = MyView() 

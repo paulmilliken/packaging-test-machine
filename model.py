@@ -4,12 +4,16 @@ import threading
 from packageTestMachineDriver import TestingMachine
 
 class MyModel(gtkmvc.ModelMT):
+    
+    analogueValuesList = None
+    displacement = None
+    __observables__ = ['analogueValuesList', 'displacement']
 
     def __init__(self):
         gtkmvc.ModelMT.__init__(self)
         self.testingMachine = TestingMachine()
         self._setInitialValuesOfVariables()
-
+        
     def _setInitialValuesOfVariables(self):
         self.nEvents = 0
         self.dataDirectory = '/home/crush/tmp'
@@ -38,19 +42,27 @@ class MyModel(gtkmvc.ModelMT):
         try:
             while (self.testingMachine.isAtTargetPosition()==False and \
                 self.nEvents==nEventsAtStartOfSquashing):
+                self.updateAnalogueValuesList()
                 self.writeOneLineOfDataToFile()
         finally:
             self._closeFile()
 
+    def updateAnalgoueValuesList(self):
+        tmp = []
+        for i in range(6):
+            tmp.append(self.testingMachine.getAnalogueMillivoltage(i))
+        self.analogueValuesList = tmp
+    
     def _writeOneLineOfDataToFile(self):
-        lineToWriteToFile = '%f.3, %d, %d\n' % \
-            (self.testingMachine.getPASIUnits(), \
-                self.testingMachine.getAnalogueMillivoltage(0), \
-                self.testingMachine.getAnalogueMillivoltage(1), \
-                self.testingMachine.getAnalogueMillivoltage(2), \
-                self.testingMachine.getAnalogueMillivoltage(3), \
-                self.testingMachine.getAnalogueMillivoltage(4), \
-                self.testingMachine.getAnalogueMillivoltage(5), \
+        self.displacement = self.testingMachine.getPASIUnits()
+        lineToWriteToFile = '%f.3, %d, %d, %d, %d, %d, %d, %f.3\n' % \
+            (self.displacement, \
+                self.analogueValuesList[0], \
+                self.analogueValuesList[1], \
+                self.analogueValuesList[2], \
+                self.analogueValuesList[3], \
+                self.analogueValuesList[4], \
+                self.analogueValuesList[5], \
                 time.time() - self.startSquashTime)
         self.fid.write(lineToWriteToFile)
 
